@@ -23,7 +23,7 @@ public class JavaBinCodecBenchmark {
     fieldMappings.add("id:/id");
     fieldMappings.add("content:/content");
     JsonRecordReader jsonRecordReader = JsonRecordReader.getInst("/", fieldMappings);
-    try (FileReader r = new FileReader("/home/shalin/temp/debug/lucenesolr-569/jimtests/input.14.json")) {
+    try (FileReader r = new FileReader("/home/shalin/work/oss/solr-jmh-tests/input140.json")) {
       List<Map<String, Object>> records = jsonRecordReader.getAllRecords(r);
       assert records.size() == 1;
       assert !records.get(0).isEmpty();
@@ -45,6 +45,7 @@ public class JavaBinCodecBenchmark {
   public void tearDown() throws Exception {
     fos.flush();
     fos.close();
+    tlogFile.delete();
   }
 
   @Benchmark
@@ -71,6 +72,20 @@ public class JavaBinCodecBenchmark {
   @Benchmark
   public void testDoublePassWriteStr() throws IOException {
     DoublePassJavaBinCodec codec = new DoublePassJavaBinCodec();
+    codec.init(fos);
+    codec.writeStr(data);
+  }
+
+  @Benchmark
+  public void testDoublePassWriteWithScratchStr() throws IOException {
+    DoublePassWithScratchJavaBinCodec codec = new DoublePassWithScratchJavaBinCodec();
+    codec.init(fos);
+    codec.writeStr(data);
+  }
+
+  @Benchmark
+  public void testDoublePassCountingOutputStream() throws IOException {
+    DoublePassCountingOutputStreamJavaBinCodec codec = new DoublePassCountingOutputStreamJavaBinCodec();
     codec.init(fos);
     codec.writeStr(data);
   }
