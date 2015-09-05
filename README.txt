@@ -14,6 +14,7 @@ java -cp ./target/benchmarks.jar DataGen ./a.json 15
 Running
 =======
 java -server -Xmx2048M -Xms2048M -jar target/benchmarks.jar -wi 3 -i 3 -gc true ".*JavaBinCodecBenchmark.*"
+java -server -Xmx2048M -Xms2048M -jar target/benchmarks.jar -wi 3 -i 10 -gc true -f 2 -prof gc ".*GrowableByteArrayDataOutputBenchmark.*"
 
 Links
 =====
