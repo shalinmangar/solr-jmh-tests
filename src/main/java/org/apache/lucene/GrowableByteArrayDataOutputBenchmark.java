@@ -112,16 +112,4 @@ public class GrowableByteArrayDataOutputBenchmark {
             doCustom.length = 0;
         }
     }
-
-    @Benchmark
-    public void testWriteString3() throws IOException   {
-        doCustom.writeString2(data.get(idx));
-        idx = (idx + 1) % data.size();
-
-        numBufferedDocs++;
-        if (doCustom.length >= chunkSize || numBufferedDocs >= maxDocsPerChunk)    {
-            numBufferedDocs = 0;
-            doCustom.length = 0;
-        }
-    }
 }
