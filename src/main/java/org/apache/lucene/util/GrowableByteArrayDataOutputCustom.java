@@ -4,7 +4,7 @@ import org.apache.lucene.store.DataOutput;
 
 import java.io.IOException;
 
-public class GrowableByteArrayDataOutputWriteStr extends DataOutput {
+public class GrowableByteArrayDataOutputCustom extends DataOutput {
 
     private static final long HALF_SHIFT = 10;
     private static final int SURROGATE_OFFSET =
@@ -23,7 +23,7 @@ public class GrowableByteArrayDataOutputWriteStr extends DataOutput {
     /**
      * Create a {@link GrowableByteArrayDataOutput} with the given initial capacity.
      */
-    public GrowableByteArrayDataOutputWriteStr(int cp) {
+    public GrowableByteArrayDataOutputCustom(int cp) {
         this.bytes = new byte[ArrayUtil.oversize(cp, 1)];
         this.length = 0;
     }
@@ -147,5 +147,17 @@ public class GrowableByteArrayDataOutputWriteStr extends DataOutput {
         writeVInt(numBytes);
         bytes = ArrayUtil.grow(bytes, length + numBytes);
         length = UTF16toUTF8(string, 0, string.length(), bytes, length);
+    }
+
+    public void writeString2(String string) throws IOException {
+        int maxLen = string.length() * UnicodeUtil.MAX_UTF8_BYTES_PER_CHAR;
+        if (bytes.length - length >= maxLen)  {
+            super.writeString(string);
+        } else  {
+            int numBytes = calcUTF16toUTF8Length(string, 0, string.length());
+            writeVInt(numBytes);
+            bytes = ArrayUtil.grow(bytes, length + numBytes);
+            length = UTF16toUTF8(string, 0, string.length(), bytes, length);
+        }
     }
 }
