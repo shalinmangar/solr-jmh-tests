@@ -151,7 +151,7 @@ public class GrowableByteArrayDataOutputCustom extends DataOutput {
 
     public void writeString2(String string) throws IOException {
         int maxLen = string.length() * UnicodeUtil.MAX_UTF8_BYTES_PER_CHAR;
-        if (bytes.length - length >= maxLen)  {
+        if (maxLen <= 65536)  {
             super.writeString(string);
         } else  {
             int numBytes = calcUTF16toUTF8Length(string, 0, string.length());
