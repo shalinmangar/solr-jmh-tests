@@ -160,4 +160,22 @@ public class GrowableByteArrayDataOutputCustom extends DataOutput {
             length = UTF16toUTF8(string, 0, string.length(), bytes, length);
         }
     }
+
+    byte[] scratchBytes = new byte[16];
+
+    public void writeString3(String string) throws IOException {
+        int maxLen = string.length() * UnicodeUtil.MAX_UTF8_BYTES_PER_CHAR;
+        if (maxLen <= 65536)  {
+            // this is just an optimized writeString() that re-uses scratchBytes.
+            scratchBytes = ArrayUtil.grow(scratchBytes, maxLen);
+            int length = UnicodeUtil.UTF16toUTF8(string, 0, string.length(), scratchBytes);
+            writeVInt(length);
+            writeBytes(scratchBytes, length);
+        } else  {
+            int numBytes = calcUTF16toUTF8Length(string, 0, string.length());
+            writeVInt(numBytes);
+            bytes = ArrayUtil.grow(bytes, length + numBytes);
+            length = UTF16toUTF8(string, 0, string.length(), bytes, length);
+        }
+    }
 }
